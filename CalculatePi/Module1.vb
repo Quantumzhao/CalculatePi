@@ -1,6 +1,6 @@
 ﻿Module Module1
 
-	Private sum As Double = 0.1
+	Private sum As Double = 0.0
 	Private sumString As String = ""
 	Private sumResidue As Double = 0
 	Private commonDigits As Int16 = 0
@@ -87,7 +87,7 @@
 
 		Dim commonPart As String = ""
 
-		Dim ProbablyMoreSameDigits As Boolean = False
+		Dim ProbablyMoreSameDigits As Boolean = True
 
 		For i As Integer = 1 To Len(sumCopys(0))
 
