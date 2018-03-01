@@ -1,8 +1,11 @@
 ﻿Module Module1
 
 	Private sum As Double = 0.0
+
 	Private sumString As String = ""
+
 	Private sumResidue As Double = 0
+
 	Private commonDigits As Int16 = 0
 
 	Public Sub Main()
@@ -11,7 +14,13 @@
 
 		'childThread.Start()
 
-		doCalculation()
+		'doCalculation()
+
+		Dim a As String = Console.ReadLine()
+
+		Dim b As String = Console.ReadLine()
+
+		Console.WriteLine(add(a, b))
 
 		Console.ReadKey()
 
@@ -28,8 +37,19 @@
 
 			sumCopyIndex += 1
 
-			sumCopy(sumCopyIndex) = sumCopy(sumCopyIndex - 1) + term(iterationIndex)
+			sumCopy(sumCopyIndex) = sumCopy(sumCopyIndex - 1)
 
+			For i As Integer = 2 ^ iterationIndex To 2 ^ (iterationIndex + 1) - 1
+
+				If iterationIndex = 0 Then
+
+					sumCopy(sumCopyIndex) += 8 / 3
+
+				End If
+
+				sumCopy(sumCopyIndex) = sumCopy(sumCopyIndex) + term(i)
+
+			Next
 
 			If sumCopyIndex = 19 Then
 
@@ -158,6 +178,172 @@
 			Return "0." & Mid(sumCopys(sumCopys.Length - 1), commonDigits + 1, 7)
 			
 		End If
+
+	End Function
+
+	Private Function add(number1 As String, number2 As String) As String
+
+		Dim number1_Integer As String = getInteger(number1)
+
+		Dim number2_Integer As String = getInteger(number2)
+
+		Dim lengthOfIntegerArray As Int64 = Math.Truncate(Math.Max(Len(number1_Integer), Len(number2_Integer)) / 10)
+
+		Dim array1_Integer(lengthOfIntegerArray) As String
+
+		Dim array2_Integer(lengthOfIntegerArray) As String
+
+		Dim array3_Integer(lengthOfIntegerArray) As String
+
+		'Integer Part
+
+		For i As Int64 = 0 To lengthOfIntegerArray
+
+			array1_Integer(i) = Mid(number1_Integer, 1 + 10 * i, 10)
+
+			array2_Integer(i) = Mid(number2_Integer, 1 + 10 * i, 10)
+
+		Next
+
+		For i As Int64 = 0 To lengthOfIntegerArray
+
+			array3_Integer(i) += Convert.ToInt64(array1_Integer(i)) + Convert.ToInt64(array2_Integer(i))
+
+			If Len(array3_Integer(i)) = 11 And i <> lengthOfIntegerArray Then
+
+				array3_Integer(i + 1) = Convert.ToInt64(array3_Integer(i + 1)) + 1
+
+				array3_Integer(i) = Right(array3_Integer(i), 10)
+
+			ElseIf Len(array3_Integer(i)) = 11 And i = lengthOfIntegerArray Then
+
+				ReDim array3_Integer(lengthOfIntegerArray + 1)
+
+				array3_Integer(lengthOfIntegerArray + 1) = 1
+
+			End If
+
+		Next
+
+		'Decimal Part
+
+		Dim number1_Decimal As String = getDecimal(number1)
+
+		Dim number2_Decimal As String = getDecimal(number2)
+
+		Dim lengthOfDecimalArray As Int64 = Math.Truncate(Math.Max(Len(number1_Decimal), Len(number2_Decimal)) / 10)
+
+		Dim array1_Decimal(lengthOfDecimalArray) As String
+
+		Dim array2_Decimal(lengthOfDecimalArray) As String
+
+		Dim array3_Decimal(lengthOfDecimalArray) As String
+
+		For i As Int64 = 0 To lengthOfDecimalArray
+
+			array1_Decimal(i) = Mid(number1_Decimal, 1 + 10 * i, 10)
+
+			array2_Decimal(i) = Mid(number2_Decimal, 1 + 10 * i, 10)
+
+		Next
+
+		array1_Decimal(lengthOfDecimalArray) = Convert.ToInt64(array1_Decimal(lengthOfDecimalArray)) * (10 ^ (10 - Len(array1_Decimal(lengthOfDecimalArray))))
+
+		array2_Decimal(lengthOfDecimalArray) = Convert.ToInt64(array1_Decimal(lengthOfDecimalArray)) * (10 ^ (10 - Len(array1_Decimal(lengthOfDecimalArray))))
+
+
+		For i As Int64 = 0 To lengthOfDecimalArray
+
+			array3_Decimal(i) += Convert.ToInt64(array1_Decimal(i)) + Convert.ToInt64(array2_Decimal(i))
+
+			If Len(array3_Decimal(i)) = 11 And i <> 0 Then
+
+				array3_Decimal(i - 1) = Convert.ToInt64(array3_Decimal(i - 1)) + 1
+
+				array3_Decimal(i) = Right(array3_Decimal(i), 10)
+
+			ElseIf Len(array3_Decimal(i)) = 11 And i = lengthOfDecimalArray Then
+
+				ReDim array3_Decimal(lengthOfDecimalArray + 1)
+
+				array3_Decimal(lengthOfDecimalArray + 1) = 1
+
+			End If
+
+		Next
+
+
+		add = ""
+
+		For i As Int64 = array3_Integer.Length - 1 To 0 Step -1
+
+			add &= array3_Integer(i)
+
+		Next
+
+		If array3_Decimal(0) <> "" And (getDecimal(number1) <> 0 And getDecimal(number2) <> 0) Then
+
+			add &= "."
+
+			For i As Int64 = 0 To array3_Decimal.Length - 1
+
+				add &= array3_Decimal(i)
+
+			Next
+
+		End If
+
+	End Function
+
+	Private Function add1(number As String) As String
+
+		Mid(number, Len(number), 1) = Convert.ToInt64(Mid(number, Len(number), 1)) + 1
+
+		Return Mid(number, 1, Len(number) - 1) & Mid(number, Len(number), 1)
+
+	End Function
+
+	Private Function getInteger(number As String) As String
+
+		If locateDecimalPoint(number) = 0 Then
+
+			Return number
+
+		Else
+
+			Return Mid(number, 1, locateDecimalPoint(number) - 1)
+
+		End If
+
+	End Function
+
+	Private Function getDecimal(number As String) As String
+
+		If locateDecimalPoint(number) = 0 Then
+
+			Return 0
+
+		Else
+
+			Return Mid(number, locateDecimalPoint(number) + 1)
+
+		End If
+
+	End Function
+
+	Private Function locateDecimalPoint(number As String) As Int64
+
+		For i As Int64 = 2 To Len(number)
+
+			If Mid(number, i, 1) = "." Then
+
+				Return i
+
+			End If
+
+		Next
+
+		Return 0
 
 	End Function
 
