@@ -8,6 +8,12 @@
 
 	Private commonDigits As Int16 = 0
 
+	Private commonPart As String = ""
+
+	Private numberOfZero As Int64
+
+	Private sumBefore As String = "0"
+
 	Public Sub Main()
 
 		'Dim childThread As Threading.Thread = New Threading.Thread(New Threading.ThreadStart(AddressOf doCalculation))
@@ -16,20 +22,121 @@
 
 		'doCalculation()
 
-		Dim a As String = Console.ReadLine()
+		'Dim a As String = Console.ReadLine()
 
-		Dim b As String = Console.ReadLine()
+		'Dim b As String = Console.ReadLine()
 
-		Console.WriteLine(add(a, b))
+		'Console.WriteLine(add(a, b))
+
+		Do
+
+			'Dim a As Int64 = Int64.MaxValue
+
+			'Console.WriteLine(a + 1)
+
+			Console.WriteLine(getNumberOfZero(Console.ReadLine()))
+
+		Loop
 
 		Console.ReadKey()
 
 	End Sub
 
+	Private Sub doComputation()
+
+		Dim iterationIndex As Int64 = 0
+
+		Dim sumAfter As String = "0"
+
+		Dim termTrial As String = "0"
+
+		Dim termApproximate As String = "0"
+
+		numberOfZero = getNumberOfZero(termTrial)
+
+		Do
+
+			Try
+
+				termTrial = 8 / ((1 + 4 * iterationIndex) * (3 + 4 * iterationIndex))
+
+			Catch ex As Exception
+
+				'Try Customized Add(,) Method
+
+			End Try
+
+			commonPart = Mid(sumBefore, 1, numberOfZero)
+
+			sumString &= commonPart
+
+			'Write Main Procedure Here
+
+			iterationIndex += 1
+
+		Loop
+
+	End Sub
+
+	Private Function term(i As Int64) As Double
+
+		term = 8 / ((1 + 4 * i) * (3 + 4 * i))
+
+		term *= powerOfTen()
+
+	End Function
+
+	Private Function getNumberOfZero(number As String)
+
+		'SPECIAL NOTICE: INCLUDES "."
+
+		For i As Int64 = 1 To Len(number)
+
+			If Mid(number, i, 1) <> "0" AndAlso Mid(number, i, 1) <> "." Then
+
+				Return i - 1
+
+			End If
+
+		Next
+
+		Return 0
+
+	End Function
+
+	Private Function getCommonPart(number As String) As String
+
+		Return Mid(number, 1, getNumberOfZero(number))
+
+	End Function
+
+	'Method getResidue Reload +1 (New)
+	Private Function getResidue(number As String) As String
+
+		Return Mid(number, Len(numberOfZero), Len(number) - Len(numberOfZero))
+
+	End Function
+
+	Private Function powerOfTen() As Int64
+
+		If commonDigits >= 2 Then
+
+			Return 10 ^ (commonDigits - 2)
+
+		Else
+
+			Return 1
+
+		End If
+
+	End Function
+
+#Region "Old Functions"
+
 	Private Sub doCalculation()
 
 		Dim iterationIndex As Int64 = 0
-		Dim sumCopy(19) As Double
+		Dim sumCopy(99) As Double
 		Dim sumCopyIndex As Int16 = 0
 
 		Do
@@ -39,19 +146,13 @@
 
 			sumCopy(sumCopyIndex) = sumCopy(sumCopyIndex - 1)
 
-			For i As Integer = 2 ^ iterationIndex To 2 ^ (iterationIndex + 1) - 1
-
-				If iterationIndex = 0 Then
-
-					sumCopy(sumCopyIndex) += 8 / 3
-
-				End If
+			For i As Integer = 100000 * iterationIndex To 100000 * (iterationIndex + 1) - 1
 
 				sumCopy(sumCopyIndex) = sumCopy(sumCopyIndex) + term(i)
 
 			Next
 
-			If sumCopyIndex = 19 Then
+			If sumCopyIndex = 99 Then
 
 				sumString &= getCommonPart(sumCopy)
 
@@ -80,28 +181,6 @@
 		Loop
 
 	End Sub
-
-	Private Function term(i As Int64) As Double
-
-		term = 8 / ((1 + 4 * i) * (3 + 4 * i))
-
-		term *= powerOfTen()
-
-	End Function
-
-	Private Function powerOfTen() As Int64
-
-		If commonDigits >= 2 Then
-
-			Return 10 ^ (commonDigits - 2)
-
-		Else
-
-			Return 1
-
-		End If
-
-	End Function
 
 	Private Function getCommonPart(sumCopys() As Double) As String
 
@@ -176,10 +255,12 @@
 		Else
 
 			Return "0." & Mid(sumCopys(sumCopys.Length - 1), commonDigits + 1, 7)
-			
+
 		End If
 
 	End Function
+
+#Region "Add ExtraLong Decimals"
 
 	Private Function add(number1 As String, number2 As String) As String
 
@@ -249,7 +330,7 @@
 
 		array1_Decimal(lengthOfDecimalArray) = Convert.ToInt64(array1_Decimal(lengthOfDecimalArray)) * (10 ^ (10 - Len(array1_Decimal(lengthOfDecimalArray))))
 
-		array2_Decimal(lengthOfDecimalArray) = Convert.ToInt64(array1_Decimal(lengthOfDecimalArray)) * (10 ^ (10 - Len(array1_Decimal(lengthOfDecimalArray))))
+		array2_Decimal(lengthOfDecimalArray) = Convert.ToInt64(array1_Decimal(lengthOfDecimalArray)) * (10 ^ (10 - Len(array2_Decimal(lengthOfDecimalArray))))
 
 
 		For i As Int64 = 0 To lengthOfDecimalArray
@@ -271,7 +352,6 @@
 			End If
 
 		Next
-
 
 		add = ""
 
@@ -297,9 +377,17 @@
 
 	Private Function add1(number As String) As String
 
-		Mid(number, Len(number), 1) = Convert.ToInt64(Mid(number, Len(number), 1)) + 1
+		Try
 
-		Return Mid(number, 1, Len(number) - 1) & Mid(number, Len(number), 1)
+			Return Convert.ToInt64(number) + 1
+
+		Catch ex As OverflowException
+
+			Mid(number, Len(number), 1) = Convert.ToInt64(Mid(number, Len(number), 1)) + 1
+
+			Return Mid(number, 1, Len(number) - 1) & Mid(number, Len(number), 1)
+
+		End Try
 
 	End Function
 
@@ -346,5 +434,9 @@
 		Return 0
 
 	End Function
+
+#End Region
+
+#End Region
 
 End Module
