@@ -10,7 +10,7 @@
 
 	Private commonPart As String = ""
 
-	Private numberOfZero As Int64
+	Private numberOfZero As Int64 = 1
 
 	Private sumBefore As String = "0"
 
@@ -20,7 +20,7 @@
 
 		'childThread.Start()
 
-		'doCalculation()
+		doComputation()
 
 		'Dim a As String = Console.ReadLine()
 
@@ -34,7 +34,7 @@
 
 			'Console.WriteLine(a + 1)
 
-			Console.WriteLine(getNumberOfZero(Console.ReadLine()))
+			Console.WriteLine(getResidue(3.1415926535, Console.ReadLine()))
 
 		Loop
 
@@ -66,17 +66,32 @@
 
 			End Try
 
-			commonPart = Mid(sumBefore, 1, numberOfZero)
+			commonPart = getCommonPart(sum, termTrial)
 
 			sumString &= commonPart
 
-			'Write Main Procedure Here
+			sum = Convert.ToDouble(getResidue(sum, termTrial)) + Convert.ToDouble(trimZero(termTrial))
 
 			iterationIndex += 1
 
 		Loop
 
 	End Sub
+
+	'This should be the later version of "powerOfTen()"
+	Private Function trimZero(term As String) As String
+
+		If getNumberOfZero(term) < 2 Then
+
+			Return term
+
+		Else
+
+			Return "0." & Mid(term, getNumberOfZero(term) + 1)
+
+		End If
+
+	End Function
 
 	Private Function term(i As Int64) As Double
 
@@ -104,16 +119,43 @@
 
 	End Function
 
-	Private Function getCommonPart(number As String) As String
+	Private Function getCommonPart(sum As String, term As String) As String
 
-		Return Mid(number, 1, getNumberOfZero(number))
+		Try
+
+			If getNumberOfZero(term) = 2 Then
+
+				Return ""
+
+			End If
+
+			Return Mid(sum, 1, getNumberOfZero(term) - 3)
+
+		Catch
+		End Try
+
+		Return ""
 
 	End Function
 
 	'Method getResidue Reload +1 (New)
-	Private Function getResidue(number As String) As String
+	'The residue is trimed, or to be called to be formatted to 0.*
+	Private Function getResidue(sum As String, term As String) As String
 
-		Return Mid(number, Len(numberOfZero), Len(number) - Len(numberOfZero))
+		Try
+
+			If term >= 0.001 Then
+
+				Return sum
+
+			End If
+
+			Return "0." & Mid(sum, getNumberOfZero(term) - 2, Len(sum) - getNumberOfZero(term))
+
+		Catch
+		End Try
+
+		Return ""
 
 	End Function
 
